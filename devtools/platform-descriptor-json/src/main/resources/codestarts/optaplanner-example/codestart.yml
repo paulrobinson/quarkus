@@ -1,0 +1,20 @@
+---
+name: optaplanner-example
+ref: optaplanner
+type: example
+spec:
+  base:
+    dependencies:
+      - io.quarkus:quarkus-optaplanner
+      - io.quarkus:quarkus-optaplanner-jackson
+      - io.quarkus:quarkus-resteasy
+      - io.quarkus:quarkus-resteasy-jackson
+      - io.quarkus:quarkus-hibernate-orm-panache
+      - io.quarkus:quarkus-jdbc-h2
+      - org.webjars:bootstrap:4.3.1
+      - org.webjars:jquery:3.4.1
+      - org.webjars:font-awesome:5.11.2
+      - org.webjars:momentjs:2.24.0
+    test-dependencies:
+      - io.rest-assured:rest-assured
+      - io.quarkus:quarkus-test-h2

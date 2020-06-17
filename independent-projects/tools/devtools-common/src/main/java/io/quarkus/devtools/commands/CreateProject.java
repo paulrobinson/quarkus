@@ -101,6 +101,16 @@ public class CreateProject {
         return this;
     }
 
+    public CreateProject codestartsEnabled(boolean codestartsEnabled) {
+        setValue("codestarts.enabled", codestartsEnabled);
+        return this;
+    }
+
+    public CreateProject withExampleCode(boolean withExampleCode) {
+        setValue("codestarts.with-example-code", withExampleCode);
+        return this;
+    }
+
     public CreateProject setValue(String name, Object value) {
         values.put(name, value);
         return this;

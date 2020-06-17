@@ -1,0 +1,10 @@
+---
+name: quarkus
+type: project
+fallback: true
+spec:
+  base:
+    shared-data:
+      project:
+        group-id: org.acme
+        artifact-id: quarkus-project

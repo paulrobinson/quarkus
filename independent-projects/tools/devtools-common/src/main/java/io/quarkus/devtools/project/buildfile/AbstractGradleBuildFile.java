@@ -63,7 +63,7 @@ public abstract class AbstractGradleBuildFile extends BuildFile {
         addDependencyInModel(getModel(), coords);
     }
 
-    static void addDependencyInModel(Model model, AppArtifactCoords coords) throws IOException {
+    public static void addDependencyInModel(Model model, AppArtifactCoords coords) throws IOException {
         StringBuilder newBuildContent = new StringBuilder();
         readLineByLine(model.getBuildContent(), currentLine -> {
             newBuildContent.append(currentLine).append(System.lineSeparator());
@@ -195,7 +195,7 @@ public abstract class AbstractGradleBuildFile extends BuildFile {
         }
     }
 
-    static class Model {
+    public static class Model {
         private String settingsContent;
         private String buildContent;
         private Properties propertiesContent;

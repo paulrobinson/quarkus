@@ -1,0 +1,17 @@
+package bundled.buildtool.gradle.scala
+
+{#include build-layout}
+{#plugins}
+plugins {
+    id 'scala'
+    id '{quarkus.plugin.id}'
+}
+{/plugins}
+{/include}
+
+compileScala {
+    scalaCompileOptions.encoding = 'UTF-8'
+    sourceCompatibility = JavaVersion.VERSION_1_8
+    targetCompatibility = JavaVersion.VERSION_1_8
+}
+

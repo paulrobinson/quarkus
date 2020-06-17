@@ -1,0 +1,13 @@
+package bundled.buildtool.gradle.base
+
+pluginManagement {
+    repositories {
+        mavenLocal()
+        mavenCentral()
+        gradlePluginPortal()
+    }
+    plugins {
+        id '{quarkus.plugin.id}' version "$\{quarkusPluginVersion}"
+    }
+}
+rootProject.name='{project.artifact-id}'

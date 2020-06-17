@@ -1,0 +1,29 @@
+#timeTable:
+#  demoData: LARGE
+quarkus:
+  datasource:
+    db-kind: h2
+    jdbc:
+      url: jdbc:h2:mem:school-timetabling
+  hibernate-orm:
+    database:
+      generation: drop-and-create
+  optaplanner:
+    solver:
+      termination:
+        spent-limit: 30s
+"%test":
+  quarkus:
+    datasource:
+      jdbc:
+        url: jdbc:h2:tcp://localhost/mem:school-timetabling
+    optaplanner:
+      solver:
+        termination:
+          spent-limit: 1h
+          best-score-limit: 0hard/*soft
+"%prod":
+  quarkus:
+    datasource:
+      jdbc:
+        url: jdbc:h2:tcp://localhost/mem:school-timetabling

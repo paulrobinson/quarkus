@@ -1,0 +1,10 @@
+---
+name: commandmode-example
+ref: commandmode
+type: example
+spec:
+  base:
+    data:
+      greeting:
+        message: "hello"
+        default-name: "commando"

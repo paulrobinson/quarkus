@@ -4,14 +4,19 @@ import static io.quarkus.devtools.commands.handlers.QuarkusCommandHandlers.compu
 import static io.quarkus.devtools.project.codegen.ProjectGenerator.*;
 
 import io.quarkus.bootstrap.model.AppArtifactCoords;
+import io.quarkus.bootstrap.model.AppArtifactKey;
+import io.quarkus.devtools.codestarts.CodestartData;
+import io.quarkus.devtools.codestarts.CodestartInput;
+import io.quarkus.devtools.codestarts.CodestartProject;
+import io.quarkus.devtools.codestarts.Codestarts;
 import io.quarkus.devtools.commands.data.QuarkusCommandException;
 import io.quarkus.devtools.commands.data.QuarkusCommandInvocation;
 import io.quarkus.devtools.commands.data.QuarkusCommandOutcome;
 import io.quarkus.devtools.project.BuildTool;
-import io.quarkus.devtools.project.buildfile.GradleBuildFilesCreator;
 import io.quarkus.devtools.project.codegen.ProjectGenerator;
 import io.quarkus.devtools.project.codegen.ProjectGeneratorRegistry;
 import io.quarkus.devtools.project.codegen.SourceType;
+import io.quarkus.devtools.project.codegen.buildtool.GradleGenerator;
 import io.quarkus.devtools.project.codegen.rest.BasicRestProjectGenerator;
 import io.quarkus.devtools.project.extensions.ExtensionManager;
 import io.quarkus.platform.descriptor.QuarkusPlatformDescriptor;
@@ -22,6 +27,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Properties;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 /**
  * Instances of this class are thread-safe. They create a new project extracting all the necessary properties from an instance
@@ -46,6 +52,26 @@ public class CreateProjectCommandHandler implements QuarkusCommandHandler {
             }
         });
 
+        if (invocation.getValue("codestarts.enabled", false)) {
+            final List<AppArtifactKey> extensionsToAdd = computeCoordsFromQuery(invocation, extensionsQuery).stream()
+                    .map(AppArtifactCoords::getKey)
+                    .collect(Collectors.toList());
+
+            try {
+                final CodestartInput input = CodestartInput.builder(invocation.getPlatformDescriptor())
+                        .addExtensions(extensionsToAdd)
+                        .addData(CodestartData.LegacySupport.convertFromLegacy(invocation.getValues()))
+                        .includeExamples(invocation.getValue("codestarts.with-example-code", true))
+                        .build();
+                final CodestartProject codestartProject = Codestarts
+                        .prepareProject(input);
+                Codestarts.generateProject(codestartProject, invocation.getQuarkusProject().getProjectDirPath());
+            } catch (IOException e) {
+                throw new QuarkusCommandException("Failed to create project", e);
+            }
+            return QuarkusCommandOutcome.success();
+        }
+
         try {
             String className = invocation.getStringValue(CLASS_NAME);
             if (className != null) {
@@ -69,8 +95,8 @@ public class CreateProjectCommandHandler implements QuarkusCommandHandler {
 
                 //TODO ia3andy extensions should be added directly during the project generation
                 if (invocation.getQuarkusProject().getBuildTool().equals(BuildTool.GRADLE)) {
-                    final GradleBuildFilesCreator creator = new GradleBuildFilesCreator(invocation.getQuarkusProject());
-                    creator.create(
+                    final GradleGenerator generator = new GradleGenerator(invocation.getQuarkusProject());
+                    generator.generate(
                             invocation.getStringValue(PROJECT_GROUP_ID),
                             invocation.getStringValue(PROJECT_ARTIFACT_ID),
                             invocation.getStringValue(PROJECT_VERSION),

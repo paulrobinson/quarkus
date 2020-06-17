@@ -1,0 +1,34 @@
+package bundled.buildtool.gradle.kotlin
+
+{#include build-layout}
+{#plugins}
+plugins {
+    id 'org.jetbrains.kotlin.jvm' version "{version.kotlin}"
+    id "org.jetbrains.kotlin.plugin.allopen" version "{version.kotlin}"
+    id '{quarkus.plugin.id}'
+}
+{/plugins}
+{/include}
+
+quarkus {
+    setOutputDirectory("$projectDir/build/classes/kotlin/main")
+}
+
+quarkusDev {
+    setSourceDir("$projectDir/src/main/kotlin")
+}
+
+allOpen {
+    annotation("javax.ws.rs.Path")
+    annotation("javax.enterprise.context.ApplicationScoped")
+    annotation("io.quarkus.test.junit.QuarkusTest")
+}
+
+compileKotlin {
+    kotlinOptions.jvmTarget = JavaVersion.VERSION_1_8
+    kotlinOptions.javaParameters = true
+}
+
+compileTestKotlin {
+    kotlinOptions.jvmTarget = JavaVersion.VERSION_1_8
+}
