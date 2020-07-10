@@ -4,38 +4,39 @@ This guide explains how to create and configure a Quarkus Codestart for an exten
 
 == Description
 
-"Codestarts" is the name we gave to our Quarkus quickstart code generation system. Codestarts are meant to provide a personalized Quarkus getting started experience and really show the Quarkus breadth.
-Quarkus extension are able to provide one or more well defined codestarts which will contain all the necessary resources to bring user who pick that extension, everything they needs to get started with it.
+"Codestarts" is the name we gave to our Quarkus quickstart code generation system. 
+Codestarts provide a personalized Quarkus getting started experience and really show the Quarkus breadth.
+Quarkus extensions are able to provide one or more well defined codestarts which will contain the necessary resources and code examples required to get started using it.
 
 == How it works
 
-There are two kinds of codestarts contributing to generating a project,
-the kind where we want to have only one for a project (called Base) and the rest (called Extra).
+There are two kinds of codestarts contributing to the generation of a project, the kind where we want to have only one for a project (called Base) and the rest (called Extra).
 
 Base:
-* project: The project skeleton (ex: a Quarkus project)
-* buildtool: The build tool (ex: Maven, Gradle, Gradle with Kotlin DSL)
-* language: The coding language (ex: Java, Kotlin, Scala)
-* config: The config type (ex: yaml, properties)
+
+* project: The project skeleton (e.g. a Quarkus project)
+* buildtool: The build tool (e.g. Maven, Gradle, Gradle with Kotlin DSL)
+* language: The coding language (e.g. Java, Kotlin, Scala)
+* config: The config type (e.g. yaml, properties)
 
 Extra:
-* tooling: Anything that can be added to improve the project (ex: dockerfiles)
+* tooling: Anything that can be added to improve the project (e.g. dockerfiles)
 * example: Any Quarkus extension can provide example code. The user can decide to activate it or not.
 
 Each codestart consists of:
 
-. a specific directory
-. a codestart.yml file
-. optionally some templates which follow a structure and naming conventions
+. A specific directory
+. A `codestart.yml` file
+. Optionally some templates which follow a structure and naming conventions
 
-*NOTE* The codestart.yml file and the directory structure follow the same principle, it can optionally contain a base and/or some language overrides.
+*NOTE* The `codestart.yml` file and the directory structure follow the same principle, it can optionally contain a base and/or some language overrides.
 
 === Project generation
 
 When generating a Quarkus project:
 
-. codestarts to use are resolved depending on the input
-. codestarts shared data is processed to make it available for all codestarts
+. Codestarts to use are resolved depending on the input
+. The Codestarts' shared data is processed to make it available for all codestarts
 . The relevant files are processed:
 ** Only the files that are related to the selected language are processed
 ** The files are processed differently based on a naming convention.
@@ -47,15 +48,15 @@ The data used to generate a specific codestart is a merge of:
 . The data of the codestart to generate
 . All codestarts "shared" data
 . The user input
-. Some specific post processing (ex: adding dependencies)
+. Some specific post processing (e.g. adding dependencies)
 
 *NOTE* The data (shared or not) can also be specific to a language.
 
-=== Directory structure
+=== Directory Structure
 
 *NOTE* `codestart.yml` is the only required file.
 
-* codestart.yml must be at the root of the codestart
+* `codestart.yml` must be at the root of the codestart
 * `./base` contains all the files that will be processed
 * `./[languageName]` contains all the files that will be processed if the specified language has been selected (overriding base)
 
@@ -77,7 +78,7 @@ spec:
     test-dependencies: a list of test dependencies to add when this is selected
 ----
 
-=== Files naming convention
+=== Files Naming Convention
 
 * containing `.qute` will be processed with Qute
 * containing `.include-qute` is used as a Qute template for inclusion.
@@ -88,13 +89,13 @@ spec:
 * containing `.smart-config.yml` will be merged together and automatically converted to the selected config type (yml or properties)
 * other files are just copied
 
-*NOTE* there is also something specific for `pom.xml` but this should not be available out of internal codestarts.
+*NOTE* There is also something specific for `pom.xml` but this should not be available out of internal codestarts.
 
-=== Writing example code for an extension
+=== Writing Example Code for an Extension
 
 Let's imagine we are writing the example codestart for my "foo" extension. As we discussed before, the base of the project is already provided so we can focus on the example code.
 
-1. Create your codestart.yml:
+1. Create your `codestart.yml`:
 
 codestart.yml:
 [source,yaml]
@@ -122,9 +123,9 @@ spec:
       - io.rest-assured:rest-assured
 ----
 
-*NOTE* You don't need to add pom.xml or build.gradle, it is going to be auto generated. It will include the dependencies provided in the codestart.yml
+*NOTE* You don't need to add `pom.xml` or `build.gradle`, it is going to be auto generated. It will include the dependencies provided in the `codestart.yml`.
 
-2. Add you example code in java, kotlin and scala
+2. Add you example code in java, kotlin or scala
 
 * java/src/main/java/org/acme/foo/Foo.java:
 [source,java]
@@ -153,7 +154,7 @@ class ExampleResource {
 
 2. Add some configuration (if needed)
 
-The config ".smart-config.yml" file is going to be merged with the other codestarts config and automatically converted to the selected config type (yaml or properties).
+The config `.smart-config.yml` file is going to be merged with the other codestarts config and automatically converted to the selected config type (yaml or properties).
 
 Note: if it's specific to a language, you can put the config in each languages folders
 
@@ -167,7 +168,7 @@ quarkus:
 
 3. Create a readme section (if needed)
 
-This will be appended to all different selected examples
+This will be appended to all different selected examples.
 
 * base/readme.append.md
 [source,markdown]
@@ -179,10 +180,10 @@ The Foo Example shows...
 
 === Tips for writing extension example code
 
-- you don't need to care about buildtool, dockerfiles, ...
-- use the package `org.acme.[unique-name]` for your sources.
-- examples in different codestarts must be independent, only the config and the build file are merged.
-- write the config in `src/main/resources/application.smart-config.yml`.
+- You don't need to care about buildtool, dockerfiles, ...
+- Use the package `org.acme.[unique-name]` for your sources.
+- Examples in different codestarts must be independent, only the config and the build file are merged.
+- Write the config in `src/main/resources/application.smart-config.yml`.
 It is going to be merged with the other codestarts config and automatically converted to the selected config type (yaml or properties).
 - you can add languages independently
 
@@ -193,3 +194,4 @@ It is going to be merged with the other codestarts config and automatically conv
 - Dependencies conflicts?
 - Config conflicts?
 - Versioning?
+
