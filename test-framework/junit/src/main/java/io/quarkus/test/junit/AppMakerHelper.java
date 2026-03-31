@@ -49,6 +49,46 @@ public class AppMakerHelper {
                 : null;
     }
 
+    /**
+     * Infers the project root directory from the test class location.
+     * This is necessary for multi-module Maven/Gradle builds where the current working directory
+     * is at the parent level, but we need to find the actual module's project root.
+     *
+     * @param testClassLocation the location of test classes (e.g., target/test-classes)
+     * @return the inferred project root directory
+     */
+    static Path inferProjectRoot(Path testClassLocation) {
+        Path current = testClassLocation.normalize().toAbsolutePath();
+
+        // Navigate up the directory tree looking for build output directories
+        // Maven: /path/to/module/target/test-classes -> /path/to/module
+        // Gradle: /path/to/module/build/classes/java/test -> /path/to/module
+        while (current != null) {
+            Path parent = current.getParent();
+            if (parent == null) {
+                break;
+            }
+
+            String dirName = current.getFileName().toString();
+
+            // If we found "target" (Maven) or "build" (Gradle), the parent is the project root
+            if ("target".equals(dirName) || "build".equals(dirName)) {
+                // Verify this is actually a project root by checking for pom.xml or build.gradle
+                if (Files.exists(parent.resolve("pom.xml")) ||
+                        Files.exists(parent.resolve("build.gradle")) ||
+                        Files.exists(parent.resolve("build.gradle.kts"))) {
+                    return parent;
+                }
+            }
+
+            current = parent;
+        }
+
+        // Fallback to CWD if we couldn't infer the project root
+        // This maintains backward compatibility for non-standard project structures
+        return Path.of("").normalize().toAbsolutePath();
+    }
+
     static PrepareResult prepare(
             Class<?> requiredTestClass,
             CuratedApplication curatedApplication,
@@ -89,10 +129,12 @@ public class AppMakerHelper {
 
         final Path testClassLocation;
         final Path appClassLocation;
-        final Path projectRoot = Path.of("").normalize().toAbsolutePath();
+        Path projectRoot;
 
         ApplicationModel testAppModel = null;
-        final ApplicationModel gradleAppModel = getGradleAppModelForIDE(projectRoot);
+        // Attempt to get Gradle app model, but we need to determine projectRoot first from test class location
+        Path initialProjectRoot = Path.of("").normalize().toAbsolutePath();
+        final ApplicationModel gradleAppModel = getGradleAppModelForIDE(initialProjectRoot);
         // If gradle project running directly with IDE
         if (gradleAppModel != null && gradleAppModel.getApplicationModule() != null) {
             final WorkspaceModule module = gradleAppModel.getApplicationModule();
@@ -122,6 +164,7 @@ public class AppMakerHelper {
             }
             validateTestDir(requiredTestClass, testClassesDir, module);
             testClassLocation = testClassesDir;
+            projectRoot = module.getModuleDir().toPath();
 
         } else {
             if (System.getProperty(BootstrapConstants.OUTPUT_SOURCES_DIR) != null) {
@@ -134,6 +177,11 @@ public class AppMakerHelper {
 
             testClassLocation = getTestClassesLocation(requiredTestClass);
             appClassLocation = getAppClassLocationForTestLocation(testClassLocation);
+
+            // Infer project root from test class location instead of using CWD
+            // This is critical for multi-module Maven/Gradle builds where CWD is at parent level
+            projectRoot = inferProjectRoot(testClassLocation);
+
             if (!appClassLocation.equals(testClassLocation)) {
                 addToBuilderIfConditionMet.accept(testClassLocation);
                 // if test classes is a dir, we should also check whether test resources dir exists as a separate dir (gradle)
