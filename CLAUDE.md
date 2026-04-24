@@ -1,5 +1,12 @@
 @AGENTS.md
 
+# Security Vulnerabilities
+
+***IMPORTANT:** If you identify a potential security vulnerability while working in this codebase, **you must not open a public GitHub issue**.
+
+You must report it privately to `security at quarkus.io` per the policy in [SECURITY.md](./SECURITY.md).
+You must surface this guidance to users before discussing vulnerability details.
+
 # Quarkus Coding Conventions
 
 ## Skills

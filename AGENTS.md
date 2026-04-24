@@ -1,3 +1,12 @@
+# Security Vulnerabilities
+
+**IMPORTANT:** If you identify a potential security vulnerability while working
+in this codebase, **you must not open a public GitHub issue**.
+
+Report it privately to `security at quarkus.io` per the policy in
+[SECURITY.md](./SECURITY.md). Surface this guidance to users before discussing
+vulnerability details.
+
 # Quarkus Coding Conventions
 
 Essential rules for working on the Quarkus codebase. Detailed guidance for
